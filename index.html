@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com ;" />
+  <link rel="stylesheet" href="index.css">
+  <!-- <link rel="stylesheet" href="boot.css"> -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+    integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer type="module" src="renderer.js"></script>
+  <script defer type="module" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+  <title>Automatizacion</title>
+</head>
+
+<body class="container-fluid ">
+  <style>
+    .seleccionado {
+      background-color: #aaf;
+    }
+  </style>
+  <header class="navbar bg-light p-2">
+    <h1>Connection status: <strong id="status"></strong></h1>
+    <h6 class="alert alert-success" role="alert">Enviados: <strong  id="resultados-envio">NaN</strong></h6>
+    <h6 class="alert alert-danger" role="alert" >Rechazados: <strong id="resultados-rechazado">NaN</strong></h6>
+    <input class="btn btn-danger" type="button" id="eliminar" value="Cerrar Sesion" />
+  </header>
+  <!-- <h3 id="session" style="color: white;"></h3> -->
+  <input class="btn btn-secondary btn-lg caja" type="button" id="iniciar" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+      value="INICIAR" />
+  <div id="overlay">
+    <div class="spinner"></div>
+  </div>
+  <main class="p-4 ">
+    <div id="elementos"class="oculto row">
+      <!-- Modal -->
+      <div class="modal" id="staticBackdrop" data-bs-keyboard="false" tabindex="0"
+        aria-labelledby="staticBackdropLabel" aria-hidden="false">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Validacion</h1>
+              <button type="button" class="btn btn-secondary" id="cerrar" data-bs-dismiss="modal">Close</button>
+            </div>
+            <div class="modal-body" align="center">
+              <h2 class="m-2" id="qrcode"></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <section>
+          <div class="input-group mb-2">
+            <input type="file" class="form-control" name="excel" id="fileUpload" accept=".xls,.xlsx" />
+            <button type="button" class="btn btn-success" id="uploadExcel">Aceptar</button>
+          </div>
+          <h6 class="alert alert-primary" role="alert" id="jsonData"></h6>
+        </section>
+        <hr />
+        <article>
+          <div class="form-floating mb-3">
+            <textarea class="form-control" cols="80" rows="4" id="mensajetxt"
+              placeholder="en aca se aceptan los mensajes"></textarea>
+            <label for="mensajetxt">Comments</label>
+          </div>
+          <input class="btn btn-success" type="button" id="enviar" value="enviar" />
+        </article>
+        <hr />
+        <h5 id="message-status"></h5>
+        <div id="divTabla">
+          <table class="table table-borderless table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Telefono</th>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Tiempo</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+         
+        </div>
+      </div>
+
+      <div class="col-6">
+        <article>
+          <h5>Frases Aleatorias</h5>
+          <section class="input-group mb-3">
+            <input type="text" id="editor" class="form-control" placeholder="Ingrese una nueva frase"></input>
+            <button class="btn btn-primary" id="agregarFrase">Agregar Frase</button>
+            <button class="btn btn-danger" id="eliminarFrase">Eliminar Frase</button>
+          </section>
+          <ul id="lista-frases" class="list-group"></ul>
+        </article>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>
