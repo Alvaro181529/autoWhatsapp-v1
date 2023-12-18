@@ -12,18 +12,40 @@
 //ejecutable                                     |
 //diseño  agbc                                   |
 //resumen de los enviados                        |X
+//conectar a la base de datos enviados           |/
 //--------------------------------------------
 const { startAPI, messageSend, callStatus } = require("./api.js");
 const { updateOnlineStatus } = require("./status.js");
 const XLSX = require("xlsx");
+let mysql = require("mysql");
 const fs = require("fs");
 const { sync } = require("rimraf");
 
 updateOnlineStatus();
+
+//--------------------------------------------
+//       Coneccion BD
+//--------------------------------------------
+let conexion;
+
+conexion = mysql.createConnection({
+  host: "localhost",
+  database: "trackpak",
+  user: "root",
+  password: "",
+});
+
+conexion.connect(function (err) {
+  if (err) {
+    throw err;
+  } else {
+    console.log("conexion a la base de datos exitosa");
+  }
+});
+
 //--------------------------------------------
 //       Excel a Json
 //--------------------------------------------
-
 var selectedFile;
 var name_item = [];
 var allJSONObjects = [];
@@ -261,6 +283,80 @@ async function star() {
 }
 
 //--------------------------------------------
+//       Envio de mensajes, Base de datos
+//--------------------------------------------
+
+let diferentesIds;
+
+function mostarBD() {
+  //CONSULTA PARA SABER SI LA ZONA ESTA VACIA , PERO SE TIENE UN NUMERO DE TELEFONO
+  //SELECT * FROM packages WHERE ZONA = ""AND TELEFONO IS NOT NULL AND TELEFONO <> 0;
+  //SELECT * FROM packages WHERE ZONA = "" OR ZONA IS NULL;
+  let ids;
+  let TELEFONOS;
+  let ZONA;
+  const packages =
+    "SELECT * FROM packages WHERE ZONA <> '' AND ZONA IS NOT NULL AND TELEFONO <> 0;";
+  conexion.query(packages, function (error, lista) {
+    if (error) {
+      throw error;
+    } else {
+      // Imprime un array con los IDs
+      ids = lista.map((objeto) => objeto.id);
+      TELEFONOS = lista.map((objeto) => objeto.TELEFONO);
+      ZONA = lista.map((objeto) => objeto.ZONA);
+      console.log(ids);
+      console.log(TELEFONOS);
+      console.log(ZONA);
+      document.getElementById("jsonDataBD").innerHTML = lista.length;
+    }
+  });
+
+  const packageSN =
+    "SELECT * FROM packages WHERE ZONA <> '' AND TELEFONO IS NOT NULL AND TELEFONO = 0";
+  conexion.query(packageSN, function (error, lista) {
+    if (error) {
+      throw error;
+    } else {
+      // Imprime un array con los IDs
+      ids = lista.map((objeto) => objeto.id);
+
+      diferentesIds = new Set(ids);
+      diferentesIds.forEach((id) => {
+        insertarMen("No Enviado", "sin Mensaje", "numero incorrecto", id);
+      });
+      console.log(diferentesIds);
+      // insertarMen("No Enviado", "sin Mensaje", "numero incorrecto", "7065");
+    }
+  });
+
+  const mensajes = "SELECT * FROM mensajes";
+  conexion.query(mensajes, function (error, lista) {
+    if (error) {
+      throw error;
+    } else {
+      // console.log(lista);
+    }
+  });
+}
+
+function insertarMen(estado, mensajes, observacion, id_telefono) {
+  //INSERT INTO `mensajes` (`id`, `estado`, `mensajes`, `observacion`, `id_telefono`) VALUES (NULL, 'Enviado', 'hola usuario', 'numero incorrecto', '10261');
+  const enviarMensajes =
+    "INSERT INTO `mensajes` (`id`, `estado`, `mensajes`, `observacion`, `id_telefono`) VALUES (NULL, ?, ?, ?, ?)";
+  conexion.query(
+    enviarMensajes,
+    [estado, mensajes, observacion, id_telefono],
+    (error, results) => {
+      if (error) {
+        throw error;
+      } else {
+        console.log("insertado");
+      }
+    }
+  );
+}
+//--------------------------------------------
 //       Envio de mensajes, muestra de info y validacion
 //--------------------------------------------
 
@@ -347,6 +443,14 @@ document.getElementById("enviar").addEventListener("click", function () {
   alert("iniciando mensajes");
 });
 
+document.getElementById("enviarBD").addEventListener("click", function () {
+  envioMensaje();
+  alert("iniciando mensajes");
+});
+
+document.getElementById("conectar").addEventListener("click", function () {
+  mostarBD();
+});
 const iniciar = document.getElementById("iniciar");
 iniciar.addEventListener("click", function () {
   console.log("inicio de start");

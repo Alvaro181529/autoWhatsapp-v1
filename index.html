@@ -54,11 +54,22 @@
       </div>
       <div class="col-6">
         <section>
+          <h4>Como desea Usar</h4>
+          <input type="button" value="Excel">
+          <input type="button" value="Base de Datos">
+        </section>
+        <section class="visible">
           <div class="input-group mb-2">
             <input type="file" class="form-control" name="excel" id="fileUpload" accept=".xls,.xlsx" />
             <button type="button" class="btn btn-success" id="uploadExcel">Aceptar</button>
           </div>
           <h6 class="alert alert-primary" role="alert" id="jsonData"></h6>
+        </section>
+        <section class="visible">
+          <div class="input-group mb-2">
+            <button type="button" class="btn btn-secondary" id="conectar">Conectar</button>
+          </div>
+          <h6 class="alert alert-primary" role="alert" id="jsonDataBD"></h6>
         </section>
         <hr />
         <article>
@@ -68,6 +79,7 @@
             <label for="mensajetxt">Comments</label>
           </div>
           <input class="btn btn-success" type="button" id="enviar" value="enviar" />
+          <input class="btn btn-success" type="button" id="enviarBD" value="enviar bd" />
         </article>
         <hr />
         <h5 id="message-status"></h5>
