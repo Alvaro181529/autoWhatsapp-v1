@@ -37,9 +37,14 @@ conexion = mysql.createConnection({
 
 conexion.connect(function (err) {
   if (err) {
+    document.getElementById("jsonDataBD").innerHTML =
+      "No conectado a la base de datos";
+    console.log("No conectado a la base de datos");
     throw err;
   } else {
-    console.log("conexion a la base de datos exitosa");
+    document.getElementById("jsonDataBD").innerHTML =
+      "Conexion a la base de datos exitosa";
+    console.log("Conexion a la base de datos exitosa");
   }
 });
 
@@ -288,56 +293,245 @@ async function star() {
 
 let diferentesIds;
 
+//ENVIO DE MENSAJE
 function mostarBD() {
   //CONSULTA PARA SABER SI LA ZONA ESTA VACIA , PERO SE TIENE UN NUMERO DE TELEFONO
   //SELECT * FROM packages WHERE ZONA = ""AND TELEFONO IS NOT NULL AND TELEFONO <> 0;
   //SELECT * FROM packages WHERE ZONA = "" OR ZONA IS NULL;
-  let ids;
-  let TELEFONOS;
-  let ZONA;
-  const packages =
-    "SELECT * FROM packages WHERE ZONA <> '' AND ZONA IS NOT NULL AND TELEFONO <> 0;";
-  conexion.query(packages, function (error, lista) {
-    if (error) {
-      throw error;
-    } else {
-      // Imprime un array con los IDs
-      ids = lista.map((objeto) => objeto.id);
-      TELEFONOS = lista.map((objeto) => objeto.TELEFONO);
-      ZONA = lista.map((objeto) => objeto.ZONA);
-      console.log(ids);
-      console.log(TELEFONOS);
-      console.log(ZONA);
-      document.getElementById("jsonDataBD").innerHTML = lista.length;
-    }
-  });
 
-  const packageSN =
-    "SELECT * FROM packages WHERE ZONA <> '' AND TELEFONO IS NOT NULL AND TELEFONO = 0";
-  conexion.query(packageSN, function (error, lista) {
-    if (error) {
-      throw error;
-    } else {
-      // Imprime un array con los IDs
-      ids = lista.map((objeto) => objeto.id);
+  const verificarBD = () => {
+    return new Promise((resolve, reject) => {
+      const menQuery = "SELECT * FROM mensajes";
+      const packQuery =
+        "SELECT * FROM packages WHERE ZONA <> '' AND ZONA IS NOT NULL AND TELEFONO <> 0";
+      const packageSN =
+        "SELECT * FROM packages WHERE ZONA <> '' AND TELEFONO IS NOT NULL AND TELEFONO = 0";
+      conexion.query(menQuery, function (errorMen, listaMen) {
+        if (errorMen) {
+          reject(errorMen);
+        } else {
+          const idTelefono = new Set(
+            listaMen.map((objeto) => objeto.id_telefono)
+          );
+          conexion.query(packQuery, function (errorPack, listaPack) {
+            if (errorPack) {
+              reject(errorPack);
+            } else {
+              const idPack = new Set(
+                listaPack.map((objeto) => ({
+                  id: objeto.id,
+                  TELEFONO: objeto.TELEFONO,
+                }))
+              );
+              conexion.query(packageSN, function (errorPack, listaPack) {
+                if (errorPack) {
+                  reject(errorPack);
+                } else {
+                  const idPackSN = new Set(
+                    listaPack.map((objeto) => ({
+                      id: objeto.id,
+                      TELEFONO: objeto.TELEFONO,
+                      ZONA: objeto.ZONA,
+                    }))
+                  );
 
-      diferentesIds = new Set(ids);
-      diferentesIds.forEach((id) => {
-        insertarMen("No Enviado", "sin Mensaje", "numero incorrecto", id);
+                  resolve({ idTelefono, idPack, idPackSN });
+                }
+              });
+            }
+          });
+        }
       });
-      console.log(diferentesIds);
-      // insertarMen("No Enviado", "sin Mensaje", "numero incorrecto", "7065");
-    }
-  });
+    });
+  };
 
-  const mensajes = "SELECT * FROM mensajes";
-  conexion.query(mensajes, function (error, lista) {
-    if (error) {
-      throw error;
-    } else {
-      // console.log(lista);
-    }
-  });
+  verificarBD()
+    .then(({ idTelefono, idPack, idPackSN }) => {
+      console.log("ID en Mensajes");
+      idTelefono.forEach((id_telefono) => {
+        console.log(id_telefono);
+      });
+      console.log("ID en Pack");
+      idPack.forEach((objeto) => {
+        console.log(objeto.id, objeto.TELEFONO);
+      });
+
+      console.log("ID de los que no tienen Numero pero si tienen Zonas");
+      idPackSN.forEach((objeto) => {
+        console.log(objeto.id, objeto.TELEFONO, objeto.ZONA);
+      });
+
+      // Verificar si hay IDs iguales de los mensajes enviados
+      const idsComunes = [...idTelefono].filter((id) => {
+        const idEnPack = [...idPack].find((objeto) => objeto.id === id);
+        return idEnPack !== undefined;
+      });
+
+      if (idsComunes.length > 0) {
+        console.log("\nIDs comunes:");
+        idsComunes.forEach((id) => {
+          const idEnPack = [...idPack].find((objeto) => objeto.id === id);
+          console.log(id, idEnPack.TELEFONO);
+        });
+      } else {
+        console.log("\nNo hay IDs comunes entre idTelefono e idPack.");
+      }
+
+      const idsComunesCeros = [...idTelefono].filter((id) => {
+        const idEnPack = [...idPackSN].find((objeto) => objeto.id === id);
+        return idEnPack !== undefined;
+      });
+
+      if (idsComunesCeros.length > 0) {
+        console.log("\nIDs comunes que no tienen numeros:");
+        idsComunesCeros.forEach((id) => {
+          const idEnPackSN = [...idPackSN].find((objeto) => objeto.id === id);
+          console.log(id, idEnPackSN.TELEFONO, idEnPackSN.ZONA);
+        });
+      } else {
+        console.log("\nNo hay IDs comunes entre idTelefono e idPack.");
+      }
+
+      // IDs que no son iguales con los que tienen numeros y zonas
+
+      const idsNoIgualesEnPack = [...idPack].filter(
+        (objeto) => !idTelefono.has(objeto.id)
+      );
+
+      if (idsNoIgualesEnPack.length > 0) {
+        console.log("\nIDs en idPack que no están en idTelefono:");
+        m = 0;
+        o = 0;
+        let n = 1;
+        const tam = idsNoIgualesEnPack.length;
+        idsNoIgualesEnPack.forEach((objeto) => {
+          console.log(objeto.id, objeto.TELEFONO);
+          let id = objeto.id;
+          const cliente = container.client;
+          let nameItem = objeto.TELEFONO;
+          let tiempo = Math.floor((2000000 - 1000000) * Math.random() + 100000);
+          espEsp();
+          const fraseAleatoria = obtenerFraseAleatoria();
+          const phone = code + nameItem + "@c.us";
+          const mensaje = message + " " + fraseAleatoria;
+          if (m == cantidad) {
+            setTimeout(function () {
+              let status = callStatus();
+              console.log("funcion send (Espera)");
+              datosTablaBD(
+                n,
+                nameItem,
+                cliente,
+                phone,
+                mensaje,
+                tiempo,
+                status,
+                id,
+                tam
+              ).then(() => n++);
+            }, espera);
+            espera += espera;
+            m = -1;
+          } else {
+            setTimeout(function () {
+              let status = callStatus();
+              console.log("funcion send (Tiempo)");
+              datosTablaBD(
+                n,
+                nameItem,
+                cliente,
+                phone,
+                mensaje,
+                tiempo,
+                status,
+                id,
+                tam
+              ).then(() => n++);
+            }, tiempo);
+            tiempo += tiempo;
+          }
+          console.log(n, nameItem, cliente, phone, mensaje, o, id);
+
+          m++;
+          o++;
+        });
+      } else {
+        console.log("no se encuentra nada");
+        alert("No todos los mensajes ya fuerron enviados")
+      }
+
+      // IDs que no son iguales solo los que tienen zonas pero no numero
+      // estos se enviaran de forma automatica
+
+      const idsNoIgualesEnPackSN = [...idPackSN].filter(
+        (objeto) => !idTelefono.has(objeto.id)
+      );
+
+      if (idsNoIgualesEnPackSN.length > 0) {
+        console.log("\nIDs en idPack que no están en idTelefono de zonas:");
+        m = 0;
+        o = 0;
+        let n = 1;
+        const tam = idsNoIgualesEnPackSN.length;
+
+        idsNoIgualesEnPackSN.forEach((objeto) => {
+          console.log(objeto.id, objeto.TELEFONO);
+          let id = objeto.id;
+          console.log(objeto.id, objeto.TELEFONO);
+          const cliente = container.client;
+          let nameItem = objeto.TELEFONO;
+          let tiempo = Math.floor((2000000 - 1000000) * Math.random() + 100000);
+          espEsp();
+          const phone = code + nameItem + "@c.us";
+          const mensaje = "Sin mensaje";
+          if (m == cantidad) {
+            setTimeout(function () {
+              let status = callStatus();
+              console.log("funcion send (Espera)");
+              datosTablaBD(
+                n,
+                nameItem,
+                cliente,
+                phone,
+                mensaje,
+                tiempo,
+                status,
+                id,
+                tam
+              ).then(() => n++);
+            }, espera);
+            espera += espera;
+            m = -1;
+          } else {
+            setTimeout(function () {
+              let status = callStatus();
+              console.log("funcion send (Tiempo)");
+              datosTablaBD(
+                n,
+                nameItem,
+                cliente,
+                phone,
+                mensaje,
+                tiempo,
+                status,
+                id,
+                tam
+              ).then(() => n++);
+            }, tiempo);
+            tiempo += tiempo;
+          }
+          console.log(n, nameItem, cliente, phone, mensaje, o, id);
+
+          m++;
+          o++;
+        });
+      } else {
+        console.log("no se encuentra nada");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 function insertarMen(estado, mensajes, observacion, id_telefono) {
@@ -356,6 +550,89 @@ function insertarMen(estado, mensajes, observacion, id_telefono) {
     }
   );
 }
+//--------------------------------------------
+//       Envio de mensajes, muestra de info y validacion BD
+//--------------------------------------------
+
+async function datosTablaBD(
+  n,
+  celular,
+  cliente,
+  phone,
+  mensaje,
+  tiempo,
+  status,
+  id
+) {
+  let tableBody = document.getElementById("tbody");
+  let estado;
+  let descripcion;
+  const cantidad = allJSONObjects.length;
+  const res = cantidad-1;
+  if (typeof celular == "number") {
+    let numeroComoCadena = celular.toString();
+    let primerNumero = numeroComoCadena[0];
+    let cantidadDigitos = numeroComoCadena.length;
+    if (
+      (cantidadDigitos == 8 && primerNumero == 7) ||
+      primerNumero == 8 ||
+      primerNumero == 6
+    ) {
+      if (status == 3) {
+        estado = `Leido`;
+      } else if (status == 2) {
+        estado = `Recibido`;
+      } else if (
+        status == 1 ||
+        status == "undefined" ||
+        status == undefined ||
+        status != 1
+      ) {
+        estado = `Enviado`;
+      }
+      descripcion = `El número es correcto.`;
+      enviados++;
+      messageSend(cliente, phone, mensaje).then(() => {
+        document.getElementById("resultados-envio").innerHTML = enviados;
+        document.getElementById("resultados-rechazado").innerHTML = rechazados;
+        if (n == res) {
+          tableBody.innerHTML += `<tr>${"<td align='center' colspan='5'> MENSAJES FINALIZADOS</td>"}</tr>`;
+          alert("se enviaron los mensajes");
+        }
+      });
+    } else if (cantidadDigitos > 8) {
+      rechazados++;
+      estado = `No enviado`;
+      descripcion = `El número es incorrecto.`;
+    } else {
+      rechazados++;
+      estado = `No enviado`;
+      descripcion = `El número es incorrecto.`;
+    }
+  } else {
+    rechazados++;
+    estado = "No es un número.";
+  }
+  insertarMen(estado, mensaje, descripcion, id);
+  tableBody.innerHTML += `<tr>${
+    "<td>" +
+    n +
+    "</td>" +
+    "<td>" +
+    celular +
+    "</td>" +
+    "<td>" +
+    estado +
+    "</td>" +
+    "<td>" +
+    descripcion +
+    "</td>" +
+    "<td>" +
+    tiempo / 10000 +
+    " seg</td>"
+  }</tr>`;
+}
+
 //--------------------------------------------
 //       Envio de mensajes, muestra de info y validacion
 //--------------------------------------------
@@ -439,11 +716,6 @@ document.getElementById("eliminarFrase").addEventListener("click", function () {
 });
 
 document.getElementById("enviar").addEventListener("click", function () {
-  envioMensaje();
-  alert("iniciando mensajes");
-});
-
-document.getElementById("enviarBD").addEventListener("click", function () {
   envioMensaje();
   alert("iniciando mensajes");
 });
