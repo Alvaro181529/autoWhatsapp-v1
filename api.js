@@ -17,8 +17,8 @@ async function startAPI() {
     code.innerHTML = "";
     new QRCode(code, {
       text: qr,
-      width: 400,
-      height: 400,
+      width: 350,
+      height: 350,
     });
   });
   client.on("authenticated", async (session) => {
