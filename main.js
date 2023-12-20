@@ -4,7 +4,7 @@ const { setMainMenu } = require("./menu.js");
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
+    width: 900,
     height: 600,
     icon: 'whatsappmobile_phone.ico',
     webPreferences: {

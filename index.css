@@ -1,5 +1,12 @@
 @import "node_modules/bootstrap/dist/css/bootstrap.min.css";
 
+#verEXCEL,
+#verBD,
+#enviar,
+#conectar {
+    display: none;
+}
+
 * {
     margin: 0;
     padding: 0;

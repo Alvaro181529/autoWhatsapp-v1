@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -20,26 +20,27 @@
 <body class="container-fluid ">
   <style>
     .seleccionado {
-      background-color: #aaf;
+      background-color: rgb(79, 79, 131);
     }
   </style>
-  <header class="navbar bg-light p-2">
-    <h1>Connection status: <strong id="status"></strong></h1>
-    <h6 class="alert alert-success" role="alert">Enviados: <strong  id="resultados-envio">NaN</strong></h6>
-    <h6 class="alert alert-danger" role="alert" >Rechazados: <strong id="resultados-rechazado">NaN</strong></h6>
+
+  <header class="navbar bg-body-tertiary p-2 fixed-top z-1">
+    <button id="toggle-theme" class="btn btn-light">Cambiar tema</button>
+    <h3>Estado: <strong id="estado"></strong></h3>
+    <h3>Internet: <strong id="status"></strong></h3>
     <input class="btn btn-danger" type="button" id="eliminar" value="Cerrar Sesion" />
   </header>
   <!-- <h3 id="session" style="color: white;"></h3> -->
-  <input class="btn btn-secondary btn-lg caja" type="button" id="iniciar" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-      value="INICIAR" />
+  <input class="btn btn-secondary btn-lg caja" type="button" id="iniciar" data-bs-toggle="modal"
+    data-bs-target="#staticBackdrop" value="INICIAR" />
   <div id="overlay">
     <div class="spinner"></div>
   </div>
-  <main class="p-4 ">
-    <div id="elementos"class="oculto row">
+  <main class="p-4 mt-5">
+    <div id="elementos" class="oculto row">
       <!-- Modal -->
-      <div class="modal" id="staticBackdrop" data-bs-keyboard="false" tabindex="0"
-        aria-labelledby="staticBackdropLabel" aria-hidden="false">
+      <div class="modal" id="staticBackdrop" data-bs-keyboard="false" tabindex="0" aria-labelledby="staticBackdropLabel"
+        aria-hidden="false">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -53,19 +54,19 @@
         </div>
       </div>
       <div class="col-6">
-        <section>
+        <section class="mb-3">
           <h4>Como desea Usar</h4>
-          <input type="button" value="Excel">
-          <input type="button" value="Base de Datos">
+          <input type="button" class="btn btn-success" id="excel" value="Excel">
+          <input type="button" class="btn btn-secondary" id="bd" value="Base de Datos">
         </section>
-        <section class="visible">
+        <section id="verEXCEL">
           <div class="input-group mb-2">
             <input type="file" class="form-control" name="excel" id="fileUpload" accept=".xls,.xlsx" />
             <button type="button" class="btn btn-success" id="uploadExcel">Aceptar</button>
           </div>
           <h6 class="alert alert-primary" role="alert" id="jsonData"></h6>
         </section>
-        <section class="visible">
+        <section id="verBD">
           <h6 class="alert alert-primary" role="alert" id="jsonDataBD"></h6>
         </section>
         <hr />
@@ -73,11 +74,20 @@
           <div class="form-floating mb-3">
             <textarea class="form-control" cols="80" rows="4" id="mensajetxt"
               placeholder="en aca se aceptan los mensajes"></textarea>
-            <label for="mensajetxt">Comments</label>
+            <label for="mensajetxt">Mensaje</label>
           </div>
-          <input class="btn btn-success" type="button" id="enviar" value="Enviar" />
-          <div class="input-group mb-2">
-            <button type="button" class="btn btn-secondary" id="conectar">Enviar</button>
+          <div class="row">
+            <div class="col-2 m-0" align="center">
+              <input class="btn btn-success" type="button" id="enviar" value="Enviar" />
+              <button type="button" class="btn btn-secondary" id="conectar">Enviar</button>
+            </div>
+            <div class="col-5 m-0">
+              <h6 class="alert alert-success" role="alert">Enviados: <strong id="resultados-envio">0</strong></h6>
+            </div>
+            <div class="col-5  m-0">
+              <h6 class="alert alert-danger" role="alert">Rechazados: <strong id="resultados-rechazado">0</strong>
+              </h6>
+            </div>
           </div>
         </article>
         <hr />
@@ -95,7 +105,7 @@
             </thead>
             <tbody id="tbody"></tbody>
           </table>
-         
+
         </div>
       </div>
 
@@ -104,8 +114,9 @@
           <h5>Frases Aleatorias</h5>
           <section class="input-group mb-3">
             <input type="text" id="editor" class="form-control" placeholder="Ingrese una nueva frase"></input>
-            <button class="btn btn-primary" id="agregarFrase">Agregar Frase</button>
-            <button class="btn btn-danger" id="eliminarFrase">Eliminar Frase</button>
+            <button class="btn btn-primary" id="agregarFrase">Agregar</button>
+            <button class="btn btn-danger" id="eliminarFrase">Eliminar</button>
+            <button class="btn btn-primary" id="verFrase">Ver</button>
           </section>
           <ul id="lista-frases" class="list-group"></ul>
         </article>

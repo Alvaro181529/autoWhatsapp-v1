@@ -13,6 +13,7 @@ async function startAPI() {
   });
 
   client.on("qr", (qr) => {
+    document.getElementById("estado").innerHTML = "Sin conexion";
     code.innerHTML = "";
     new QRCode(code, {
       text: qr,
@@ -34,10 +35,11 @@ async function startAPI() {
     console.log("cliente inicializado");
   });
   await client.initialize().then(() => {
-    code.innerHTML = "conectado";
+    document.getElementById("estado").innerHTML = "conectado";
+    code.innerHTML ="conectando...."
   });
   const texto = code.textContent;
-  const palabra = texto.includes("conectado");
+  const palabra = texto.includes("conectando....");
   if (palabra) {
     console.log("La palabra 'oculto' se encuentra en el div.");
     const botonCerrar = document.querySelector("#cerrar");
@@ -90,7 +92,7 @@ function messageSend(cliente, contacto, mensaje) {
   try {
     return cliente.sendMessage(contacto, mensaje);
   } catch (error) {
-    alert("ES POSIBLE QUE TE HAYAN BANEADO ;-;");
+    alert("No fue posible conectarse");
   }
 }
 

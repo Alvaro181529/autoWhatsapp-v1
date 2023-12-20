@@ -171,15 +171,12 @@ function seleccionarFrase(event) {
 fs.readFile("frases.txt", "utf8", (err, data) => {
   if (err) throw err;
   frasesAleatorias = data.split("\n");
-  console.log("Contenido del archivo leído:", frasesAleatorias);
 });
 
 function guardar() {
-  console.log("Frases guardadas:", frasesAleatorias);
   const contenido = frasesAleatorias.join("\n");
   fs.writeFile("frases.txt", contenido, (err) => {
     if (err) throw err;
-    console.log("Archivo frases.txt creado exitosamente");
   });
 }
 
@@ -212,16 +209,15 @@ function obtenerFraseAleatoria() {
 men.addEventListener("input", function () {
   message = men.value;
   console.clear();
-  console.log(message);
-});
+  });
 
 function espTiem() {
-  tiempo = Math.floor((300000 - 100000) * Math.random() + 100000);
+  tiempo = Math.floor((3000000 - 1000000) * Math.random() + 1000000);
   return tiempo;
 }
 
 function espEsp() {
-  espera = Math.floor((150000 - 90000) * Math.random() + 100000);
+  espera = Math.floor((15000000 - 9000000) * Math.random() + 10000000);
 }
 function espCan() {
   cantidad = Math.floor(Math.random() * (40 - 20) + 20);
@@ -568,7 +564,7 @@ async function datosTablaBD(
   let estado;
   let descripcion;
   const cantidad = allJSONObjects.length;
-  const res = cantidad-1;
+  const res = cantidad - 1;
   if (typeof celular == "number") {
     let numeroComoCadena = celular.toString();
     let primerNumero = numeroComoCadena[0];
@@ -614,8 +610,7 @@ async function datosTablaBD(
     estado = "No es un número.";
   }
   insertarMen(estado, mensaje, descripcion, id);
-  tableBody.innerHTML += `<tr>${
-    "<td>" +
+  tableBody.innerHTML += `<tr>${"<td>" +
     n +
     "</td>" +
     "<td>" +
@@ -630,7 +625,7 @@ async function datosTablaBD(
     "<td>" +
     tiempo / 10000 +
     " seg</td>"
-  }</tr>`;
+    }</tr>`;
 }
 
 //--------------------------------------------
@@ -686,8 +681,7 @@ async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
     rechazados++;
     estado = "No es un número.";
   }
-  tableBody.innerHTML += `<tr>${
-    "<td>" +
+  tableBody.innerHTML += `<tr>${"<td>" +
     n +
     "</td>" +
     "<td>" +
@@ -702,11 +696,68 @@ async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
     "<td>" +
     tiempo / 10000 +
     " seg</td>"
-  }</tr>`;
+    }</tr>`;
 }
 //--------------------------------------------
 //       Uso de botones
 //--------------------------------------------
+
+const themeButton = document.getElementById('toggle-theme');
+
+themeButton.addEventListener('click', function() {
+  const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+  const theme = currentTheme === 'dark' ? 'light' : 'dark';
+
+  document.documentElement.setAttribute('data-bs-theme', theme);
+
+  // Cambiar la clase del botón
+  themeButton.classList.toggle('btn-dark', theme === 'light');
+  themeButton.classList.toggle('btn-light', theme === 'dark');
+});
+
+const uploadButton = document.getElementById('uploadExcel');
+uploadButton.disabled = true; // Desactiva el botón
+const fileInput = document.getElementById('fileUpload');
+
+fileInput.addEventListener('change', function () {
+  if (fileInput.files.length > 0) {
+    uploadButton.disabled = false; // Activa el botón si hay un archivo
+  } else {
+    uploadButton.disabled = true; // Desactiva el botón si no hay archivo
+  }
+});
+const submitButton = document.getElementById('enviar');
+submitButton.disabled = true; // Desactiva el botón
+
+uploadButton.addEventListener('click', function () {
+  // Activa el botón "Enviar" al hacer clic en "Aceptar"
+  submitButton.disabled = false;
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Obtener referencias a los elementos
+  const excelButton = document.getElementById("excel");
+  const bdButton = document.getElementById("bd");
+  const verExcelSection = document.getElementById("verEXCEL");
+  const verBDSection = document.getElementById("verBD");
+  const enviarButton = document.getElementById("enviar");
+  const conectarButton = document.getElementById("conectar");
+
+  // Agregar eventos a los botones
+  excelButton.addEventListener("click", function () {
+    verExcelSection.style.display = "block";
+    verBDSection.style.display = "none";
+    enviarButton.style.display = "block";
+    conectarButton.style.display = "none";
+  });
+
+  bdButton.addEventListener("click", function () {
+    verExcelSection.style.display = "none";
+    verBDSection.style.display = "block";
+    enviarButton.style.display = "none";
+    conectarButton.style.display = "block";
+  });
+});
 document.getElementById("agregarFrase").addEventListener("click", function () {
   agregarFrase();
 });
@@ -723,11 +774,12 @@ document.getElementById("enviar").addEventListener("click", function () {
 document.getElementById("conectar").addEventListener("click", function () {
   mostarBD();
 });
-const iniciar = document.getElementById("iniciar");
-iniciar.addEventListener("click", function () {
+document.getElementById("verFrase").addEventListener("click", function () {
+  cargarFrases();
+})
+document.getElementById("iniciar").addEventListener("click", function () {
   console.log("inicio de start");
   star();
-  cargarFrases();
   // Oculta el botón y muestra el spinner
   this.style.display = "none";
   document.getElementById("overlay").style.display = "flex";
