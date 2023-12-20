@@ -217,7 +217,7 @@ function espTiem() {
 }
 
 function espEsp() {
-  espera = Math.floor((150000000 - 90000000) * Math.random() + 10000000);
+  espera = Math.floor((15000000 - 9000000) * Math.random() + 10000000);
 }
 function espCan() {
   cantidad = Math.floor(Math.random() * (40 - 20) + 20);
