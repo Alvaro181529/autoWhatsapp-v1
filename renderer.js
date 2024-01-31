@@ -209,7 +209,7 @@ function obtenerFraseAleatoria() {
 men.addEventListener("input", function () {
   message = men.value;
   console.clear();
-  });
+});
 
 function espTiem() {
   tiempo = Math.floor((3000000 - 1000000) * Math.random() + 1000000);
@@ -217,7 +217,7 @@ function espTiem() {
 }
 
 function espEsp() {
-  espera = Math.floor((15000000 - 9000000) * Math.random() + 10000000);
+  espera = Math.floor((15000000 - 9000000) * Math.random() + 1000000);
 }
 function espCan() {
   cantidad = Math.floor(Math.random() * (40 - 20) + 20);
@@ -237,7 +237,7 @@ function envioMensaje() {
       const cliente = container.client;
       // const cliente = " container.client";
       let nameItem = objeto[name_item];
-      let tiempo = Math.floor((2000000 - 1000000) * Math.random() + 10000);
+      let tiempo = Math.floor((20000000 - 10000000) * Math.random() + 105000);
       espEsp();
       const fraseAleatoria = obtenerFraseAleatoria();
       const phone = code + nameItem + "@c.us";
@@ -246,9 +246,8 @@ function envioMensaje() {
         setTimeout(function () {
           let status = callStatus();
           console.log("funcion send (Espera)");
-          datosTabla(n, nameItem, cliente, phone, mensaje, tiempo, status).then(
-            () => n++
-          );
+          datosTabla(n, nameItem, cliente, phone, mensaje, tiempo, status)
+          n++;
         }, espera);
         espera += espera;
         m = -1;
@@ -256,9 +255,9 @@ function envioMensaje() {
         setTimeout(function () {
           let status = callStatus();
           console.log("funcion send (Tiempo)");
-          datosTabla(n, nameItem, cliente, phone, mensaje, tiempo, status).then(
-            () => n++
-          );
+          datosTabla(n, nameItem, cliente, phone, mensaje, tiempo, status);
+          n++;
+
         }, tiempo);
         tiempo += tiempo;
       }
@@ -476,7 +475,7 @@ function mostarBD() {
           console.log(objeto.id, objeto.TELEFONO);
           const cliente = container.client;
           let nameItem = objeto.TELEFONO;
-          let tiempo = Math.floor((2000000 - 1000000) * Math.random() + 100000);
+          let tiempo = Math.floor((2000000 - 100000) * Math.random() + 100000);
           espEsp();
           const phone = code + nameItem + "@c.us";
           const mensaje = "Sin mensaje";
@@ -631,11 +630,23 @@ async function datosTablaBD(
 //--------------------------------------------
 //       Envio de mensajes, muestra de info y validacion
 //--------------------------------------------
-
+function scrollToBottom() {
+  var divMens = document.getElementById('divTabla');
+  divMens.scrollTop = divMens.scrollHeight;
+}
 async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
   let tableBody = document.getElementById("tbody");
   let estado;
   let descripcion;
+  // Obtener la hora actual
+  var horaActual = new Date();
+
+  // Extraer la hora, los minutos y los segundos
+  var horas = horaActual.getHours();
+  var minutos = horaActual.getMinutes();
+  var segundos = horaActual.getSeconds();
+  // Formatear la hora en un formato HH:mm:ss
+  var horaFormateada = horas + ':' + minutos + ':' + segundos;
 
   if (typeof celular == "number") {
     let numeroComoCadena = celular.toString();
@@ -694,9 +705,10 @@ async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
     descripcion +
     "</td>" +
     "<td>" +
-    tiempo / 10000 +
+    horaFormateada +
     " seg</td>"
     }</tr>`;
+  scrollToBottom(); s
 }
 //--------------------------------------------
 //       Uso de botones
@@ -704,7 +716,7 @@ async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
 
 const themeButton = document.getElementById('toggle-theme');
 
-themeButton.addEventListener('click', function() {
+themeButton.addEventListener('click', function () {
   const currentTheme = document.documentElement.getAttribute('data-bs-theme');
   const theme = currentTheme === 'dark' ? 'light' : 'dark';
 
@@ -742,6 +754,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const verBDSection = document.getElementById("verBD");
   const enviarButton = document.getElementById("enviar");
   const conectarButton = document.getElementById("conectar");
+  verExcelSection.style.display = "block";
+  enviarButton.style.display = "block";
 
   // Agregar eventos a los botones
   excelButton.addEventListener("click", function () {
@@ -767,8 +781,10 @@ document.getElementById("eliminarFrase").addEventListener("click", function () {
 });
 
 document.getElementById("enviar").addEventListener("click", function () {
-  envioMensaje();
-  alert("iniciando mensajes");
+  const send = confirm("¿Seguro de empezar a enviar mensajes?");
+  if(send){
+    envioMensaje();
+  }
 });
 
 document.getElementById("conectar").addEventListener("click", function () {

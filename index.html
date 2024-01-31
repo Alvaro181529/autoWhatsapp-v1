@@ -20,7 +20,7 @@
 <body class="container-fluid ">
   <style>
     .seleccionado {
-      background-color: rgb(79, 79, 131);
+      background-color: rgb(113, 113, 136);
     }
   </style>
 
@@ -53,12 +53,12 @@
           </div>
         </div>
       </div>
-      <div class="col-6">
-        <section class="mb-3">
+      <div class="col-7">
+        <!-- <section class="mb-3">
           <h4>Via</h4>
           <input type="button" class="btn btn-success" id="excel" value="Excel">
           <input type="button" class="btn btn-secondary" id="bd" value="Tracking BO">
-        </section>
+        </section> -->
         <section id="verEXCEL">
           <div class="input-group mb-2">
             <input type="file" class="form-control" name="excel" id="fileUpload" accept=".xls,.xlsx" />
@@ -92,7 +92,7 @@
         </article>
         <hr />
         <h5 id="message-status"></h5>
-        <div id="divTabla">
+        <div id="divTabla" class="mens">
           <table class="table table-borderless table-striped">
             <thead>
               <tr>
@@ -100,7 +100,7 @@
                 <th>Telefono</th>
                 <th>Estado</th>
                 <th>Descripción</th>
-                <th>Tiempo</th>
+                <th>Hora de envio</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -109,7 +109,7 @@
         </div>
       </div>
 
-      <div class="col-6">
+      <div class="col-5">
         <article>
           <h5>Frases Aleatorias</h5>
           <section class="input-group mb-3">
