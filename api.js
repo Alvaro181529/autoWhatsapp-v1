@@ -2,6 +2,7 @@ const { Client, LocalAuth } = require("whatsapp-web.js");
 const code = document.getElementById("qrcode");
 const rimraf = require("rimraf");
 const fs = require("fs");
+let numero;
 let status;
 const SESSION_FOLDER_PATH = ".wwebjs_auth";
 async function startAPI() {
@@ -33,6 +34,9 @@ async function startAPI() {
   });
   client.on("ready", () => {
     console.log("cliente inicializado");
+    const user = client.info.me.user;
+    numero = user.slice(-8);
+    document.getElementById("user").innerHTML= numero
   });
   await client.initialize().then(() => {
     document.getElementById("estado").innerHTML = "conectado";

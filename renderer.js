@@ -217,7 +217,7 @@ function espTiem() {
 }
 
 function espEsp() {
-  espera = Math.floor((15000000 - 9000000) * Math.random() + 1000000);
+  espera = Math.floor((1500000 - 900000) * Math.random() + 100000);
 }
 function espCan() {
   cantidad = Math.floor(Math.random() * (40 - 20) + 20);
@@ -237,7 +237,7 @@ function envioMensaje() {
       const cliente = container.client;
       // const cliente = " container.client";
       let nameItem = objeto[name_item];
-      let tiempo = Math.floor((20000000 - 10000000) * Math.random() + 105000);
+      let tiempo = Math.floor((500000 - 100000) * Math.random() + 10000);
       espEsp();
       const fraseAleatoria = obtenerFraseAleatoria();
       const phone = code + nameItem + "@c.us";
