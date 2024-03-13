@@ -211,13 +211,8 @@ men.addEventListener("input", function () {
   console.clear();
 });
 
-function espTiem() {
-  tiempo = Math.floor((3000000 - 1000000) * Math.random() + 1000000);
-  return tiempo;
-}
-
 function espEsp() {
-  espera = Math.floor((1500000 - 900000) * Math.random() + 100000);
+  espera = Math.floor((1500000 - 900000) * Math.random() + 1000000);
 }
 function espCan() {
   cantidad = Math.floor(Math.random() * (40 - 20) + 20);
@@ -230,15 +225,26 @@ function espCan() {
 cantidad = espCan();
 function envioMensaje() {
   try {
+    let leng = allJSONObjects.length;
+
     m = 0;
     o = 0;
+    let tiempo;
+    let espera;
     let n = 1;
     allJSONObjects.forEach(async (objeto) => {
       const cliente = container.client;
       // const cliente = " container.client";
       let nameItem = objeto[name_item];
-      let tiempo = Math.floor((500000 - 100000) * Math.random() + 10000);
-      espEsp();
+      if (leng > 40) {
+        tiempo = Math.floor((3500000 - 100000) * Math.random() + 105000);
+        espera = Math.floor((20000 - 90000) * Math.random() + 100000);
+      }
+      else {
+        tiempo = Math.floor((500000 - 100000) * Math.random() + 10000);
+        espera = Math.floor((20000 - 90000) * Math.random() + 100000);
+
+      } console.log("tiemposs " + tiempo)
       const fraseAleatoria = obtenerFraseAleatoria();
       const phone = code + nameItem + "@c.us";
       const mensaje = message + " " + fraseAleatoria;
@@ -261,7 +267,7 @@ function envioMensaje() {
         }, tiempo);
         tiempo += tiempo;
       }
-      console.log(n, nameItem, cliente, phone, mensaje, o);
+      console.log(n, nameItem, cliente, phone, mensaje, tiempo, o);
 
       m++;
       o++;
@@ -708,7 +714,7 @@ async function datosTabla(n, celular, cliente, phone, mensaje, tiempo, status) {
     horaFormateada +
     " seg</td>"
     }</tr>`;
-  scrollToBottom(); s
+  scrollToBottom();
 }
 //--------------------------------------------
 //       Uso de botones
@@ -782,7 +788,7 @@ document.getElementById("eliminarFrase").addEventListener("click", function () {
 
 document.getElementById("enviar").addEventListener("click", function () {
   const send = confirm("¿Seguro de empezar a enviar mensajes?");
-  if(send){
+  if (send) {
     envioMensaje();
   }
 });
