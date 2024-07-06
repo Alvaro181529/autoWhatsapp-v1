@@ -7,14 +7,22 @@ let status;
 const SESSION_FOLDER_PATH = ".wwebjs_auth";
 async function startAPI() {
   let sessionData;
-  console.log("estra a estart qr");
+  console.log("esta a estart qr");
   const client = new Client({
-    session: sessionData,
     authStrategy: new LocalAuth(),
-    webVersionCache: { type: 'remote', remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'},
+    puppeteer: {
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    },
+    webVersionCache: {
+      type: "remote",
+      remotePath: "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+    },
   });
-
+  
+  console.log("qr")
   client.on("qr", (qr) => {
+    console.log(qr)
     document.getElementById("estado").innerHTML = "Sin conexion";
     code.innerHTML = "";
     new QRCode(code, {
@@ -37,21 +45,21 @@ async function startAPI() {
     console.log("cliente inicializado");
     const user = client.info.me.user;
     numero = user.slice(-8);
-    document.getElementById("user").innerHTML= numero
+    document.getElementById("user").innerHTML = numero;
   });
   await client.initialize().then(() => {
     document.getElementById("estado").innerHTML = "conectado";
-    code.innerHTML ="conectando...."
+    code.innerHTML = "conectando....";
   });
   const texto = code.textContent;
   const palabra = texto.includes("conectando....");
-  if (palabra) {
-    console.log("La palabra 'oculto' se encuentra en el div.");
-    const botonCerrar = document.querySelector("#cerrar");
-    botonCerrar.click();
-  } else {
-    console.log("La palabra 'oculto' no se encuentra en el div.");
-  }
+  // if (palabra) {
+  //   console.log("La palabra 'oculto' se encuentra en el div.");
+  //   const botonCerrar = document.querySelector("#cerrar");
+  //   botonCerrar.click();
+  // } else {
+  //   console.log("La palabra 'oculto' no se encuentra en el div.");
+  // }
   client.on("message_ack", (msg, ack) => {
     status = ack;
   });
@@ -69,11 +77,13 @@ async function startAPI() {
           );
           document.getElementById("iniciar").click();
         } catch (err) {
-          console.error("Error al eliminar la carpeta de sesiones:", err.message);
+          console.error(
+            "Error al eliminar la carpeta de sesiones:",
+            err.message
+          );
         }
       }
     }, 3000);
-
   });
   return client;
 }
